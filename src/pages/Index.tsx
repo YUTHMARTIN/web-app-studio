@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { SummaryCard } from '@/components/SummaryCard';
 import { TransactionTable } from '@/components/TransactionTable';
-import { AddTransactionForm } from '@/components/AddTransactionForm';
+import { MonthlyInputTable } from '@/components/MonthlyInputTable';
+import { ExpenseChart } from '@/components/ExpenseChart';
 import { mockTransactions } from '@/lib/mockData';
 import { Transaction } from '@/types/finance';
 import { WalletIcon } from 'lucide-react';
@@ -19,13 +20,17 @@ const Index = () => {
 
   const netProfit = totalIncome - totalExpense;
 
-  const handleAddTransaction = (newTransaction: Omit<Transaction, 'id'>) => {
-    const transaction: Transaction = {
-      ...newTransaction,
-      id: Date.now().toString(),
-    };
-    setTransactions([transaction, ...transactions]);
+  const handleAddTransactions = (newTransactions: Omit<Transaction, 'id'>[]) => {
+    const transactionsWithIds: Transaction[] = newTransactions.map((t, index) => ({
+      ...t,
+      id: `${Date.now()}-${index}`,
+    }));
+    setTransactions([...transactionsWithIds, ...transactions]);
   };
+
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
+  const currentYear = currentDate.getFullYear();
 
   const handleDeleteTransaction = (id: string) => {
     setTransactions(transactions.filter((t) => t.id !== id));
@@ -57,8 +62,15 @@ const Index = () => {
           <SummaryCard title="Net Profit" amount={netProfit} type="profit" />
         </div>
 
-        {/* Add Transaction Form */}
-        <AddTransactionForm onAdd={handleAddTransaction} />
+        {/* Expense Charts */}
+        <ExpenseChart transactions={transactions} />
+
+        {/* Monthly Input Table */}
+        <MonthlyInputTable 
+          onAddTransactions={handleAddTransactions}
+          currentMonth={currentMonth}
+          currentYear={currentYear}
+        />
 
         {/* Transactions Table */}
         <div className="space-y-4">
