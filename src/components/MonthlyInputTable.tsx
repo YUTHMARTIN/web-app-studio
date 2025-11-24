@@ -13,6 +13,7 @@ import {
 import { CalendarIcon } from 'lucide-react';
 import { Transaction } from '@/types/finance';
 import { toast } from 'sonner';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface DailyEntry {
   day: number;
@@ -29,6 +30,7 @@ interface MonthlyInputTableProps {
 }
 
 export function MonthlyInputTable({ onAddTransactions, currentMonth, currentYear }: MonthlyInputTableProps) {
+  const { t } = useLanguage();
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   
   const [entries, setEntries] = useState<DailyEntry[]>(
@@ -77,7 +79,7 @@ export function MonthlyInputTable({ onAddTransactions, currentMonth, currentYear
     });
 
     if (transactions.length === 0) {
-      toast.error('Please add at least one income or expense entry');
+      toast.error(t('toast.error.emptyEntries'));
       return;
     }
 
@@ -94,17 +96,23 @@ export function MonthlyInputTable({ onAddTransactions, currentMonth, currentYear
       }))
     );
     
-    toast.success(`Added ${transactions.length} transactions`);
+    toast.success(`${t('toast.success.added')} ${transactions.length} ${t('toast.success.transactions')}`);
   };
 
-  const monthName = new Date(currentYear, currentMonth).toLocaleString('en-US', { month: 'long' });
+  const monthNames = [
+    'month.january', 'month.february', 'month.march', 'month.april',
+    'month.may', 'month.june', 'month.july', 'month.august',
+    'month.september', 'month.october', 'month.november', 'month.december'
+  ];
+  
+  const monthName = t(monthNames[currentMonth]);
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <CalendarIcon className="h-5 w-5" />
-          Monthly Input - {monthName} {currentYear}
+          {t('monthly.title')} - {monthName} {currentYear}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -112,11 +120,11 @@ export function MonthlyInputTable({ onAddTransactions, currentMonth, currentYear
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[80px]">Day</TableHead>
-                <TableHead>Income ($)</TableHead>
-                <TableHead>Income Category</TableHead>
-                <TableHead>Expense ($)</TableHead>
-                <TableHead>Expense Category</TableHead>
+                <TableHead className="w-[80px]">{t('monthly.day')}</TableHead>
+                <TableHead>{t('monthly.income')}</TableHead>
+                <TableHead>{t('monthly.incomeCategory')}</TableHead>
+                <TableHead>{t('monthly.expense')}</TableHead>
+                <TableHead>{t('monthly.expenseCategory')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -127,7 +135,7 @@ export function MonthlyInputTable({ onAddTransactions, currentMonth, currentYear
                     <Input
                       type="number"
                       step="0.01"
-                      placeholder="0.00"
+                      placeholder={t('monthly.placeholder.amount')}
                       value={entry.income}
                       onChange={(e) => updateEntry(entry.day, 'income', e.target.value)}
                       className="w-full"
@@ -136,7 +144,7 @@ export function MonthlyInputTable({ onAddTransactions, currentMonth, currentYear
                   <TableCell>
                     <Input
                       type="text"
-                      placeholder="e.g., Salary"
+                      placeholder={t('monthly.placeholder.incomeCategory')}
                       value={entry.incomeCategory}
                       onChange={(e) => updateEntry(entry.day, 'incomeCategory', e.target.value)}
                       className="w-full"
@@ -146,7 +154,7 @@ export function MonthlyInputTable({ onAddTransactions, currentMonth, currentYear
                     <Input
                       type="number"
                       step="0.01"
-                      placeholder="0.00"
+                      placeholder={t('monthly.placeholder.amount')}
                       value={entry.expense}
                       onChange={(e) => updateEntry(entry.day, 'expense', e.target.value)}
                       className="w-full"
@@ -155,7 +163,7 @@ export function MonthlyInputTable({ onAddTransactions, currentMonth, currentYear
                   <TableCell>
                     <Input
                       type="text"
-                      placeholder="e.g., Groceries"
+                      placeholder={t('monthly.placeholder.expenseCategory')}
                       value={entry.expenseCategory}
                       onChange={(e) => updateEntry(entry.day, 'expenseCategory', e.target.value)}
                       className="w-full"
@@ -168,7 +176,7 @@ export function MonthlyInputTable({ onAddTransactions, currentMonth, currentYear
         </div>
         <div className="mt-4">
           <Button onClick={handleSubmit} className="w-full">
-            Save All Entries
+            {t('monthly.saveAll')}
           </Button>
         </div>
       </CardContent>
