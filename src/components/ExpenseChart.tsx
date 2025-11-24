@@ -1,6 +1,7 @@
 import { Transaction } from '@/types/finance';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ExpenseChartProps {
   transactions: Transaction[];
@@ -9,6 +10,8 @@ interface ExpenseChartProps {
 const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
 export function ExpenseChart({ transactions }: ExpenseChartProps) {
+  const { t } = useLanguage();
+  
   // Group expenses by category
   const expensesByCategory = transactions
     .filter(t => t.type === 'EXPENSE')
@@ -43,7 +46,7 @@ export function ExpenseChart({ transactions }: ExpenseChartProps) {
       {/* Pie Chart */}
       <Card>
         <CardHeader>
-          <CardTitle>Expense Distribution</CardTitle>
+          <CardTitle>{t('chart.expenseDistribution')}</CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
@@ -72,7 +75,7 @@ export function ExpenseChart({ transactions }: ExpenseChartProps) {
       {/* Bar Chart */}
       <Card>
         <CardHeader>
-          <CardTitle>Expenses by Category</CardTitle>
+          <CardTitle>{t('chart.expensesByCategory')}</CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>

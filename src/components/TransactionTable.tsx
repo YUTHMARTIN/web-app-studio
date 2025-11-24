@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface TransactionTableProps {
   transactions: Transaction[];
@@ -18,6 +19,8 @@ interface TransactionTableProps {
 }
 
 export function TransactionTable({ transactions, onDelete }: TransactionTableProps) {
+  const { t } = useLanguage();
+  
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -38,11 +41,11 @@ export function TransactionTable({ transactions, onDelete }: TransactionTablePro
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Date</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Description</TableHead>
-            <TableHead className="text-right">Amount</TableHead>
+            <TableHead>{t('transactions.date')}</TableHead>
+            <TableHead>{t('transactions.type')}</TableHead>
+            <TableHead>{t('transactions.category')}</TableHead>
+            <TableHead>{t('transactions.description')}</TableHead>
+            <TableHead className="text-right">{t('transactions.amount')}</TableHead>
             {onDelete && <TableHead className="w-[80px]"></TableHead>}
           </TableRow>
         </TableHeader>
@@ -59,7 +62,7 @@ export function TransactionTable({ transactions, onDelete }: TransactionTablePro
                       : 'border-expense bg-expense-light text-expense'
                   )}
                 >
-                  {transaction.type}
+                  {t(transaction.type === 'INCOME' ? 'transactions.income' : 'transactions.expense')}
                 </Badge>
               </TableCell>
               <TableCell>{transaction.category}</TableCell>
