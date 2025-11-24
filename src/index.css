@@ -63,6 +63,13 @@ All colors MUST be HSL.
     
     /* Transitions */
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Chart colors */
+    --chart-1: 221 83% 53%;
+    --chart-2: 142 76% 36%;
+    --chart-3: 262 83% 58%;
+    --chart-4: 32 95% 44%;
+    --chart-5: 340 82% 52%;
 
     --sidebar-background: 0 0% 98%;
 
@@ -122,6 +129,14 @@ All colors MUST be HSL.
     --profit: 221 83% 53%;
     --profit-foreground: 0 0% 100%;
     --profit-light: 221 83% 15%;
+    
+    /* Chart colors - dark mode */
+    --chart-1: 221 83% 53%;
+    --chart-2: 142 70% 45%;
+    --chart-3: 262 83% 58%;
+    --chart-4: 32 95% 44%;
+    --chart-5: 340 82% 52%;
+    
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
