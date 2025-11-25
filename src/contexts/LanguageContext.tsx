@@ -66,6 +66,18 @@ const translations = {
     'month.october': 'October',
     'month.november': 'November',
     'month.december': 'December',
+    
+    // Day Details Dialog
+    'dialog.income': 'Income',
+    'dialog.expense': 'Expense',
+    'dialog.profit': 'Profit',
+    'dialog.amount': 'Amount',
+    'dialog.category': 'Category',
+    'dialog.addIncome': 'Add Income',
+    'dialog.addExpense': 'Add Expense',
+    'dialog.save': 'Save',
+    'dialog.cancel': 'Cancel',
+    'dialog.selectCategory': 'Select category',
   },
   km: {
     // Header
@@ -124,6 +136,18 @@ const translations = {
     'month.october': 'តុលា',
     'month.november': 'វិច្ឆិកា',
     'month.december': 'ធ្នូ',
+    
+    // Day Details Dialog
+    'dialog.income': 'ចំណូល',
+    'dialog.expense': 'ចំណាយ',
+    'dialog.profit': 'ប្រាក់ចំណេញ',
+    'dialog.amount': 'ចំនួនទឹកប្រាក់',
+    'dialog.category': 'ប្រភេទ',
+    'dialog.addIncome': 'បន្ថែមចំណូល',
+    'dialog.addExpense': 'បន្ថែមចំណាយ',
+    'dialog.save': 'រក្សាទុក',
+    'dialog.cancel': 'បោះបង់',
+    'dialog.selectCategory': 'ជ្រើសរើសប្រភេទ',
   },
 };
 

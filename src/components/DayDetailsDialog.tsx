@@ -88,8 +88,18 @@ export function DayDetailsDialog({
   const profit = totalIncome - totalExpense;
 
   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    t('month.january'),
+    t('month.february'),
+    t('month.march'),
+    t('month.april'),
+    t('month.may'),
+    t('month.june'),
+    t('month.july'),
+    t('month.august'),
+    t('month.september'),
+    t('month.october'),
+    t('month.november'),
+    t('month.december'),
   ];
 
   return (
@@ -105,15 +115,15 @@ export function DayDetailsDialog({
           {/* Summary */}
           <div className="grid grid-cols-3 gap-4 p-4 bg-muted rounded-lg">
             <div>
-              <p className="text-sm text-muted-foreground">Income</p>
+              <p className="text-sm text-muted-foreground">{t('dialog.income')}</p>
               <p className="text-xl font-bold text-green-600">${totalIncome.toFixed(2)}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Expense</p>
+              <p className="text-sm text-muted-foreground">{t('dialog.expense')}</p>
               <p className="text-xl font-bold text-red-600">${totalExpense.toFixed(2)}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Profit</p>
+              <p className="text-sm text-muted-foreground">{t('dialog.profit')}</p>
               <p className={`text-xl font-bold ${profit >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
                 ${profit.toFixed(2)}
               </p>
@@ -123,16 +133,16 @@ export function DayDetailsDialog({
           {/* Income Section */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Income</h3>
+              <h3 className="text-lg font-semibold">{t('dialog.income')}</h3>
               <Button type="button" size="sm" onClick={addIncome}>
                 <PlusIcon className="h-4 w-4 mr-1" />
-                Add Income
+                {t('dialog.addIncome')}
               </Button>
             </div>
             {incomes.map((income, index) => (
               <div key={index} className="flex gap-2 items-start">
                 <div className="flex-1 space-y-2">
-                  <Label>Amount</Label>
+                  <Label>{t('dialog.amount')}</Label>
                   <Input
                     type="number"
                     step="0.01"
@@ -142,13 +152,13 @@ export function DayDetailsDialog({
                   />
                 </div>
                 <div className="flex-1 space-y-2">
-                  <Label>Category</Label>
+                  <Label>{t('dialog.category')}</Label>
                   <Select
                     value={income.category}
                     onValueChange={(value) => updateIncome(index, 'category', value)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
+                      <SelectValue placeholder={t('dialog.selectCategory')} />
                     </SelectTrigger>
                     <SelectContent>
                       {INCOME_CATEGORIES.map((cat) => (
@@ -177,16 +187,16 @@ export function DayDetailsDialog({
           {/* Expense Section */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Expense</h3>
+              <h3 className="text-lg font-semibold">{t('dialog.expense')}</h3>
               <Button type="button" size="sm" onClick={addExpense}>
                 <PlusIcon className="h-4 w-4 mr-1" />
-                Add Expense
+                {t('dialog.addExpense')}
               </Button>
             </div>
             {expenses.map((expense, index) => (
               <div key={index} className="flex gap-2 items-start">
                 <div className="flex-1 space-y-2">
-                  <Label>Amount</Label>
+                  <Label>{t('dialog.amount')}</Label>
                   <Input
                     type="number"
                     step="0.01"
@@ -196,13 +206,13 @@ export function DayDetailsDialog({
                   />
                 </div>
                 <div className="flex-1 space-y-2">
-                  <Label>Category</Label>
+                  <Label>{t('dialog.category')}</Label>
                   <Select
                     value={expense.category}
                     onValueChange={(value) => updateExpense(index, 'category', value)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
+                      <SelectValue placeholder={t('dialog.selectCategory')} />
                     </SelectTrigger>
                     <SelectContent>
                       {EXPENSE_CATEGORIES.map((cat) => (
@@ -231,9 +241,9 @@ export function DayDetailsDialog({
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            {t('dialog.cancel')}
           </Button>
-          <Button onClick={handleSave}>Save</Button>
+          <Button onClick={handleSave}>{t('dialog.save')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
