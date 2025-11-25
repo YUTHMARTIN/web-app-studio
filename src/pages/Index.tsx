@@ -1,17 +1,81 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { SummaryCard } from '@/components/SummaryCard';
-import { TransactionTable } from '@/components/TransactionTable';
 import { MonthlyInputTable } from '@/components/MonthlyInputTable';
 import { ExpenseChart } from '@/components/ExpenseChart';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { mockTransactions } from '@/lib/mockData';
+import { MonthYearSelector } from '@/components/MonthYearSelector';
 import { Transaction } from '@/types/finance';
-import { WalletIcon } from 'lucide-react';
+import { WalletIcon, LogOutIcon } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 const Index = () => {
   const { t } = useLanguage();
-  const [transactions, setTransactions] = useState<Transaction[]>(mockTransactions);
+  const navigate = useNavigate();
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
+  
+  const currentDate = new Date();
+  const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
+  const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
+
+  useEffect(() => {
+    // Check authentication
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/auth');
+        return;
+      }
+      setUserId(session.user.id);
+    };
+
+    checkAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!session) {
+        navigate('/auth');
+      } else {
+        setUserId(session.user.id);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  const fetchTransactions = async () => {
+    if (!userId) return;
+
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('transactions')
+      .select('*')
+      .eq('user_id', userId)
+      .order('date', { ascending: false });
+
+    if (error) {
+      toast.error('Error fetching transactions: ' + error.message);
+    } else {
+      setTransactions((data || []) as Transaction[]);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    if (userId) {
+      fetchTransactions();
+    }
+  }, [userId]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/auth');
+  };
 
   const totalIncome = transactions
     .filter((t) => t.type === 'INCOME')
@@ -23,21 +87,13 @@ const Index = () => {
 
   const netProfit = totalIncome - totalExpense;
 
-  const handleAddTransactions = (newTransactions: Omit<Transaction, 'id'>[]) => {
-    const transactionsWithIds: Transaction[] = newTransactions.map((t, index) => ({
-      ...t,
-      id: `${Date.now()}-${index}`,
-    }));
-    setTransactions([...transactionsWithIds, ...transactions]);
-  };
-
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth();
-  const currentYear = currentDate.getFullYear();
-
-  const handleDeleteTransaction = (id: string) => {
-    setTransactions(transactions.filter((t) => t.id !== id));
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -54,13 +110,30 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground">{t('header.subtitle')}</p>
               </div>
             </div>
-            <LanguageSwitcher />
+            <div className="flex items-center gap-2">
+              <LanguageSwitcher />
+              <Button variant="outline" size="icon" onClick={handleLogout}>
+                <LogOutIcon className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 space-y-8">
+        {/* Month/Year Selector */}
+        <div className="flex justify-start">
+          <MonthYearSelector
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+            onMonthYearChange={(month, year) => {
+              setSelectedMonth(month);
+              setSelectedYear(year);
+            }}
+          />
+        </div>
+
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <SummaryCard title={t('summary.totalIncome')} amount={totalIncome} type="income" />
@@ -73,29 +146,10 @@ const Index = () => {
 
         {/* Monthly Input Table */}
         <MonthlyInputTable 
-          onAddTransactions={handleAddTransactions}
-          currentMonth={currentMonth}
-          currentYear={currentYear}
+          currentMonth={selectedMonth}
+          currentYear={selectedYear}
+          onDataChange={fetchTransactions}
         />
-
-        {/* Transactions Table */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold">{t('transactions.title')}</h2>
-              <p className="text-sm text-muted-foreground">
-                {t('transactions.subtitle')}
-              </p>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              {transactions.length} {transactions.length !== 1 ? t('transactions.counts') : t('transactions.count')}
-            </div>
-          </div>
-          <TransactionTable 
-            transactions={transactions} 
-            onDelete={handleDeleteTransaction}
-          />
-        </div>
       </main>
     </div>
   );
