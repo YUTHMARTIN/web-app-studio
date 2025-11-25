@@ -79,8 +79,18 @@ export function MonthlyInputTable({ currentMonth, currentYear, onDataChange }: M
   };
 
   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    t('month.january'),
+    t('month.february'),
+    t('month.march'),
+    t('month.april'),
+    t('month.may'),
+    t('month.june'),
+    t('month.july'),
+    t('month.august'),
+    t('month.september'),
+    t('month.october'),
+    t('month.november'),
+    t('month.december'),
   ];
 
   return (

@@ -6,6 +6,7 @@ import {
 } from '@/components/ui/popover';
 import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { useState } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface MonthYearSelectorProps {
   selectedMonth: number;
@@ -13,18 +14,29 @@ interface MonthYearSelectorProps {
   onMonthYearChange: (month: number, year: number) => void;
 }
 
-const MONTHS = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
-];
-
 export function MonthYearSelector({
   selectedMonth,
   selectedYear,
   onMonthYearChange,
 }: MonthYearSelectorProps) {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [viewYear, setViewYear] = useState(selectedYear);
+
+  const MONTHS = [
+    t('month.january'),
+    t('month.february'),
+    t('month.march'),
+    t('month.april'),
+    t('month.may'),
+    t('month.june'),
+    t('month.july'),
+    t('month.august'),
+    t('month.september'),
+    t('month.october'),
+    t('month.november'),
+    t('month.december'),
+  ];
 
   const handleMonthClick = (monthIndex: number) => {
     onMonthYearChange(monthIndex, viewYear);
