@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -31,6 +31,8 @@ interface DayDetailsDialogProps {
   month: number;
   year: number;
   onSave: (incomes: EntryItem[], expenses: EntryItem[]) => void;
+  initialIncomes?: EntryItem[];
+  initialExpenses?: EntryItem[];
 }
 
 const INCOME_CATEGORIES = ['Income A', 'Income B', 'Income C', 'Income D'];
@@ -43,10 +45,27 @@ export function DayDetailsDialog({
   month,
   year,
   onSave,
+  initialIncomes,
+  initialExpenses,
 }: DayDetailsDialogProps) {
   const { t } = useLanguage();
   const [incomes, setIncomes] = useState<EntryItem[]>([{ amount: '', category: '' }]);
   const [expenses, setExpenses] = useState<EntryItem[]>([{ amount: '', category: '' }]);
+
+  // Load initial data when dialog opens
+  useEffect(() => {
+    if (open && initialIncomes && initialIncomes.length > 0) {
+      setIncomes(initialIncomes);
+    } else if (open) {
+      setIncomes([{ amount: '', category: '' }]);
+    }
+
+    if (open && initialExpenses && initialExpenses.length > 0) {
+      setExpenses(initialExpenses);
+    } else if (open) {
+      setExpenses([{ amount: '', category: '' }]);
+    }
+  }, [open, initialIncomes, initialExpenses]);
 
   const addIncome = () => {
     setIncomes([...incomes, { amount: '', category: '' }]);

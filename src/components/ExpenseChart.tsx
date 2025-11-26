@@ -12,6 +12,18 @@ const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3
 export function ExpenseChart({ transactions }: ExpenseChartProps) {
   const { t } = useLanguage();
   
+  // Group income by category
+  const incomeByCategory = transactions
+    .filter(t => t.type === 'INCOME')
+    .reduce((acc, transaction) => {
+      const category = transaction.category;
+      if (!acc[category]) {
+        acc[category] = 0;
+      }
+      acc[category] += transaction.amount;
+      return acc;
+    }, {} as Record<string, number>);
+
   // Group expenses by category
   const expensesByCategory = transactions
     .filter(t => t.type === 'EXPENSE')
@@ -24,14 +36,14 @@ export function ExpenseChart({ transactions }: ExpenseChartProps) {
       return acc;
     }, {} as Record<string, number>);
 
-  const pieData = Object.entries(expensesByCategory).map(([name, value]) => ({
+  const incomePieData = Object.entries(incomeByCategory).map(([name, value]) => ({
     name,
     value,
   }));
 
-  const barData = Object.entries(expensesByCategory).map(([category, amount]) => ({
-    category,
-    amount,
+  const expensePieData = Object.entries(expensesByCategory).map(([name, value]) => ({
+    name,
+    value,
   }));
 
   const formatCurrency = (value: number) => {
@@ -43,16 +55,16 @@ export function ExpenseChart({ transactions }: ExpenseChartProps) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Pie Chart */}
+      {/* Income Distribution */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('chart.expenseDistribution')}</CardTitle>
+          <CardTitle>{t('chart.incomeDistribution')}</CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
-                data={pieData}
+                data={incomePieData}
                 cx="50%"
                 cy="50%"
                 labelLine={false}
@@ -61,7 +73,7 @@ export function ExpenseChart({ transactions }: ExpenseChartProps) {
                 fill="#8884d8"
                 dataKey="value"
               >
-                {pieData.map((entry, index) => (
+                {incomePieData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
@@ -72,20 +84,31 @@ export function ExpenseChart({ transactions }: ExpenseChartProps) {
         </CardContent>
       </Card>
 
-      {/* Bar Chart */}
+      {/* Expense Distribution */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('chart.expensesByCategory')}</CardTitle>
+          <CardTitle>{t('chart.expenseDistribution')}</CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={barData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="category" />
-              <YAxis />
+            <PieChart>
+              <Pie
+                data={expensePieData}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {expensePieData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
               <Tooltip formatter={(value) => formatCurrency(value as number)} />
-              <Bar dataKey="amount" fill="hsl(var(--primary))" />
-            </BarChart>
+              <Legend />
+            </PieChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>

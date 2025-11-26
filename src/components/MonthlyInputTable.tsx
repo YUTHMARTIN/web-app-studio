@@ -17,13 +17,43 @@ export function MonthlyInputTable({ currentMonth, currentYear, onDataChange }: M
   const { t } = useLanguage();
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [dayIncomes, setDayIncomes] = useState<Array<{ amount: string; category: string }>>([]);
+  const [dayExpenses, setDayExpenses] = useState<Array<{ amount: string; category: string }>>([]);
 
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
-  const handleDayClick = (day: number) => {
+  const handleDayClick = async (day: number) => {
     setSelectedDay(day);
     setDialogOpen(true);
+    
+    // Fetch existing transactions for this day
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    
+    const { data, error } = await supabase
+      .from('transactions')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('date', dateStr);
+
+    if (!error && data) {
+      const incomes = data
+        .filter(t => t.type === 'INCOME')
+        .map(t => ({ amount: t.amount.toString(), category: t.category }));
+      
+      const expenses = data
+        .filter(t => t.type === 'EXPENSE')
+        .map(t => ({ amount: t.amount.toString(), category: t.category }));
+
+      setDayIncomes(incomes.length > 0 ? incomes : []);
+      setDayExpenses(expenses.length > 0 ? expenses : []);
+    } else {
+      setDayIncomes([]);
+      setDayExpenses([]);
+    }
   };
 
   const handleSave = async (
@@ -39,6 +69,13 @@ export function MonthlyInputTable({ currentMonth, currentYear, onDataChange }: M
     }
 
     const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
+    
+    // First, delete existing transactions for this day
+    await supabase
+      .from('transactions')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('date', dateStr);
     
     const transactions = [
       ...incomes
@@ -126,6 +163,8 @@ export function MonthlyInputTable({ currentMonth, currentYear, onDataChange }: M
           month={currentMonth}
           year={currentYear}
           onSave={handleSave}
+          initialIncomes={dayIncomes}
+          initialExpenses={dayExpenses}
         />
       )}
     </>

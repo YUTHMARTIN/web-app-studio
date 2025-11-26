@@ -85,7 +85,7 @@ export function MonthYearSelector({
                 className="h-auto py-3"
                 onClick={() => handleMonthClick(index)}
               >
-                {month.slice(0, 3)}
+                {month}
               </Button>
             ))}
           </div>
