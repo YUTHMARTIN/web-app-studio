@@ -20,8 +20,8 @@ const translations = {
     'summary.netProfit': 'Net Profit',
     
     // Charts
+    'chart.incomeDistribution': 'Income Distribution',
     'chart.expenseDistribution': 'Expense Distribution',
-    'chart.expensesByCategory': 'Expenses by Category',
     
     // Monthly Input
     'monthly.title': 'Monthly Input',
@@ -90,8 +90,8 @@ const translations = {
     'summary.netProfit': 'ប្រាក់ចំណេញសុទ្ធ',
     
     // Charts
+    'chart.incomeDistribution': 'ការបែងចែកចំណូល',
     'chart.expenseDistribution': 'ការបែងចែកចំណាយ',
-    'chart.expensesByCategory': 'ចំណាយតាមប្រភេទ',
     
     // Monthly Input
     'monthly.title': 'បញ្ចូលប្រចាំខែ',
