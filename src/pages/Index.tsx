@@ -6,11 +6,13 @@ import { ExpenseChart } from '@/components/ExpenseChart';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { MonthYearSelector } from '@/components/MonthYearSelector';
 import { Transaction } from '@/types/finance';
-import { WalletIcon, LogOutIcon } from 'lucide-react';
+import { WalletIcon, LogOutIcon, DownloadIcon } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { exportIncomesToCSV, exportExpensesToCSV } from '@/utils/csvUtils';
+import { CSVImportButton } from '@/components/CSVImportButton';
 
 const Index = () => {
   const { t } = useLanguage();
@@ -77,6 +79,24 @@ const Index = () => {
     navigate('/auth');
   };
 
+  const handleExportIncomes = () => {
+    try {
+      exportIncomesToCSV(transactions);
+      toast.success('Incomes exported successfully!');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Error exporting incomes');
+    }
+  };
+
+  const handleExportExpenses = () => {
+    try {
+      exportExpensesToCSV(transactions);
+      toast.success('Expenses exported successfully!');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Error exporting expenses');
+    }
+  };
+
   const totalIncome = transactions
     .filter((t) => t.type === 'INCOME')
     .reduce((sum, t) => sum + t.amount, 0);
@@ -111,6 +131,15 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <CSVImportButton onImportComplete={fetchTransactions} />
+              <Button variant="outline" size="sm" onClick={handleExportIncomes}>
+                <DownloadIcon className="h-4 w-4 mr-2" />
+                Export Incomes CSV
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleExportExpenses}>
+                <DownloadIcon className="h-4 w-4 mr-2" />
+                Export Expenses CSV
+              </Button>
               <LanguageSwitcher />
               <Button variant="outline" size="icon" onClick={handleLogout}>
                 <LogOutIcon className="h-4 w-4" />
