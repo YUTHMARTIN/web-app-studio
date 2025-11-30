@@ -5,6 +5,7 @@ import { MonthlyInputTable } from '@/components/MonthlyInputTable';
 import { ExpenseChart } from '@/components/ExpenseChart';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { ProfileButton } from '@/components/ProfileButton';
 import { MonthYearSelector } from '@/components/MonthYearSelector';
 import { Transaction } from '@/types/finance';
 import { WalletIcon, LogOutIcon, DownloadIcon } from 'lucide-react';
@@ -20,6 +21,7 @@ const Index = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
+  const [username, setUsername] = useState<string>('');
   
   const currentDate = new Date();
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
@@ -123,7 +125,9 @@ const Index = () => {
               <div className="rounded-lg bg-primary p-1.5 sm:p-2">
                 <WalletIcon className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
               </div>
-              <h1 className="text-lg sm:text-xl font-bold text-foreground">{t('header.title')}</h1>
+              <h1 className="text-lg sm:text-xl font-bold text-foreground">
+                {t('header.title')}{username ? ` - ${username}` : ''}
+              </h1>
             </div>
             <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
               <Button variant="outline" size="sm" onClick={handleExportIncomes} className="text-xs sm:text-sm h-8 px-2 sm:px-3">
@@ -138,6 +142,7 @@ const Index = () => {
               </Button>
               <LanguageSwitcher />
               <ThemeToggle />
+              {userId && <ProfileButton userId={userId} onUsernameChange={setUsername} />}
               <Button variant="outline" size="icon" onClick={handleLogout} className="h-8 w-8">
                 <LogOutIcon className="h-4 w-4" />
               </Button>
