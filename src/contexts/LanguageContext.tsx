@@ -78,6 +78,18 @@ const translations = {
     'dialog.save': 'Save',
     'dialog.cancel': 'Cancel',
     'dialog.selectCategory': 'Select category',
+    
+    // Profile
+    'profile': 'Profile',
+    'email': 'Email',
+    'username': 'Username',
+    'enterUsername': 'Enter username',
+    'save': 'Save',
+    'cancel': 'Cancel',
+    'edit': 'Edit',
+    'profileUpdated': 'Profile updated successfully',
+    'updateFailed': 'Failed to update profile',
+    'usernameRequired': 'Username is required',
   },
   km: {
     // Header
@@ -148,6 +160,18 @@ const translations = {
     'dialog.save': 'រក្សាទុក',
     'dialog.cancel': 'បោះបង់',
     'dialog.selectCategory': 'ជ្រើសរើសប្រភេទ',
+    
+    // Profile
+    'profile': 'គណនី',
+    'email': 'អ៊ីមែល',
+    'username': 'ឈ្មោះអ្នកប្រើ',
+    'enterUsername': 'បញ្ចូលឈ្មោះអ្នកប្រើ',
+    'save': 'រក្សាទុក',
+    'cancel': 'បោះបង់',
+    'edit': 'កែសម្រួល',
+    'profileUpdated': 'បានធ្វើបច្ចុប្បន្នភាពគណនីដោយជោគជ័យ',
+    'updateFailed': 'បរាជ័យក្នុងការធ្វើបច្ចុប្បន្នភាពគណនី',
+    'usernameRequired': 'ឈ្មោះអ្នកប្រើត្រូវការ',
   },
 };
 
