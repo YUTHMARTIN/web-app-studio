@@ -133,19 +133,19 @@ export function MonthlyInputTable({ currentMonth, currentYear, onDataChange }: M
   return (
     <>
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <CalendarIcon className="h-5 w-5" />
+        <CardHeader className="py-3 sm:py-4 px-3 sm:px-6">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <CalendarIcon className="h-4 w-4 sm:h-5 sm:w-5" />
             {monthNames[currentMonth]} {currentYear}
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-7 gap-2">
+        <CardContent className="p-2 sm:p-4">
+          <div className="grid grid-cols-5 sm:grid-cols-7 gap-1.5 sm:gap-2">
             {days.map((day) => (
               <Button
                 key={day}
                 variant="outline"
-                className="h-14 text-lg font-semibold hover:bg-primary hover:text-primary-foreground"
+                className="h-10 sm:h-12 text-sm sm:text-base font-semibold hover:bg-primary hover:text-primary-foreground"
                 onClick={() => handleDayClick(day)}
               >
                 {day}

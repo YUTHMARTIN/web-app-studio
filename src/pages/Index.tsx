@@ -12,7 +12,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { exportIncomesToCSV, exportExpensesToCSV } from '@/utils/csvUtils';
-import { CSVImportButton } from '@/components/CSVImportButton';
 
 const Index = () => {
   const { t } = useLanguage();
@@ -26,7 +25,6 @@ const Index = () => {
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
 
   useEffect(() => {
-    // Check authentication
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
@@ -38,7 +36,6 @@ const Index = () => {
 
     checkAuth();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (!session) {
         navigate('/auth');
@@ -119,29 +116,27 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="rounded-lg bg-primary p-2">
-                <WalletIcon className="h-6 w-6 text-primary-foreground" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-foreground">{t('header.title')}</h1>
-                <p className="text-sm text-muted-foreground">{t('header.subtitle')}</p>
-              </div>
-            </div>
+        <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <CSVImportButton onImportComplete={fetchTransactions} />
-              <Button variant="outline" size="sm" onClick={handleExportIncomes}>
-                <DownloadIcon className="h-4 w-4 mr-2" />
-                Export Incomes CSV
+              <div className="rounded-lg bg-primary p-1.5 sm:p-2">
+                <WalletIcon className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
+              </div>
+              <h1 className="text-lg sm:text-xl font-bold text-foreground">{t('header.title')}</h1>
+            </div>
+            <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+              <Button variant="outline" size="sm" onClick={handleExportIncomes} className="text-xs sm:text-sm h-8 px-2 sm:px-3">
+                <DownloadIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Export Incomes CSV</span>
+                <span className="sm:hidden">Incomes</span>
               </Button>
-              <Button variant="outline" size="sm" onClick={handleExportExpenses}>
-                <DownloadIcon className="h-4 w-4 mr-2" />
-                Export Expenses CSV
+              <Button variant="outline" size="sm" onClick={handleExportExpenses} className="text-xs sm:text-sm h-8 px-2 sm:px-3">
+                <DownloadIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Export Expenses CSV</span>
+                <span className="sm:hidden">Expenses</span>
               </Button>
               <LanguageSwitcher />
-              <Button variant="outline" size="icon" onClick={handleLogout}>
+              <Button variant="outline" size="icon" onClick={handleLogout} className="h-8 w-8">
                 <LogOutIcon className="h-4 w-4" />
               </Button>
             </div>
@@ -150,7 +145,7 @@ const Index = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 space-y-8">
+      <main className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Month/Year Selector */}
         <div className="flex justify-start">
           <MonthYearSelector
@@ -164,7 +159,7 @@ const Index = () => {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
           <SummaryCard title={t('summary.totalIncome')} amount={totalIncome} type="income" />
           <SummaryCard title={t('summary.totalExpense')} amount={totalExpense} type="expense" />
           <SummaryCard title={t('summary.netProfit')} amount={netProfit} type="profit" />
