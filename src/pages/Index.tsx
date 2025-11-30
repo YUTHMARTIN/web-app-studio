@@ -4,6 +4,7 @@ import { SummaryCard } from '@/components/SummaryCard';
 import { MonthlyInputTable } from '@/components/MonthlyInputTable';
 import { ExpenseChart } from '@/components/ExpenseChart';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { MonthYearSelector } from '@/components/MonthYearSelector';
 import { Transaction } from '@/types/finance';
 import { WalletIcon, LogOutIcon, DownloadIcon } from 'lucide-react';
@@ -136,6 +137,7 @@ const Index = () => {
                 <span className="sm:hidden">Expenses</span>
               </Button>
               <LanguageSwitcher />
+              <ThemeToggle />
               <Button variant="outline" size="icon" onClick={handleLogout} className="h-8 w-8">
                 <LogOutIcon className="h-4 w-4" />
               </Button>
