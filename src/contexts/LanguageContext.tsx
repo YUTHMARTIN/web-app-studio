@@ -90,6 +90,14 @@ const translations = {
     'profileUpdated': 'Profile updated successfully',
     'updateFailed': 'Failed to update profile',
     'usernameRequired': 'Username is required',
+    
+    // Category Management
+    'category.edit': 'Edit',
+    'category.manageIncome': 'Manage Income Categories',
+    'category.manageExpense': 'Manage Expense Categories',
+    'category.newPlaceholder': 'New category name',
+    'category.noCategories': 'No categories yet. Add one above.',
+    'dialog.close': 'Close',
   },
   km: {
     // Header
@@ -172,6 +180,14 @@ const translations = {
     'profileUpdated': 'បានធ្វើបច្ចុប្បន្នភាពគណនីដោយជោគជ័យ',
     'updateFailed': 'បរាជ័យក្នុងការធ្វើបច្ចុប្បន្នភាពគណនី',
     'usernameRequired': 'ឈ្មោះអ្នកប្រើត្រូវការ',
+    
+    // Category Management
+    'category.edit': 'កែសម្រួល',
+    'category.manageIncome': 'គ្រប់គ្រងប្រភេទចំណូល',
+    'category.manageExpense': 'គ្រប់គ្រងប្រភេទចំណាយ',
+    'category.newPlaceholder': 'ឈ្មោះប្រភេទថ្មី',
+    'category.noCategories': 'មិនទាន់មានប្រភេទទេ។ បន្ថែមនៅខាងលើ។',
+    'dialog.close': 'បិទ',
   },
 };
 

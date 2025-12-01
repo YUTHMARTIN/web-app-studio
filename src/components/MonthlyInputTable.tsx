@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CalendarIcon } from 'lucide-react';
@@ -11,9 +11,20 @@ interface MonthlyInputTableProps {
   currentMonth: number;
   currentYear: number;
   onDataChange: () => void;
+  incomeCategories: string[];
+  expenseCategories: string[];
 }
 
-export function MonthlyInputTable({ currentMonth, currentYear, onDataChange }: MonthlyInputTableProps) {
+const DEFAULT_INCOME_CATEGORIES = ['Income A', 'Income B', 'Income C', 'Income D'];
+const DEFAULT_EXPENSE_CATEGORIES = ['Expense A', 'Expense B', 'Expense C', 'Expense D'];
+
+export function MonthlyInputTable({ 
+  currentMonth, 
+  currentYear, 
+  onDataChange,
+  incomeCategories,
+  expenseCategories,
+}: MonthlyInputTableProps) {
   const { t } = useLanguage();
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -130,6 +141,10 @@ export function MonthlyInputTable({ currentMonth, currentYear, onDataChange }: M
     t('month.december'),
   ];
 
+  // Use custom categories or fallback to defaults
+  const finalIncomeCategories = incomeCategories.length > 0 ? incomeCategories : DEFAULT_INCOME_CATEGORIES;
+  const finalExpenseCategories = expenseCategories.length > 0 ? expenseCategories : DEFAULT_EXPENSE_CATEGORIES;
+
   return (
     <>
       <Card>
@@ -165,6 +180,8 @@ export function MonthlyInputTable({ currentMonth, currentYear, onDataChange }: M
           onSave={handleSave}
           initialIncomes={dayIncomes}
           initialExpenses={dayExpenses}
+          incomeCategories={finalIncomeCategories}
+          expenseCategories={finalExpenseCategories}
         />
       )}
     </>

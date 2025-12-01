@@ -23,6 +23,8 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
   const [username, setUsername] = useState<string>('');
+  const [incomeCategories, setIncomeCategories] = useState<string[]>([]);
+  const [expenseCategories, setExpenseCategories] = useState<string[]>([]);
   
   const currentDate = new Date();
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
@@ -69,9 +71,24 @@ const Index = () => {
     setLoading(false);
   };
 
+  const fetchCategories = async () => {
+    if (!userId) return;
+
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('user_id', userId);
+
+    if (!error && data) {
+      setIncomeCategories(data.filter(c => c.type === 'INCOME').map(c => c.name));
+      setExpenseCategories(data.filter(c => c.type === 'EXPENSE').map(c => c.name));
+    }
+  };
+
   useEffect(() => {
     if (userId) {
       fetchTransactions();
+      fetchCategories();
     }
   }, [userId]);
 
@@ -178,13 +195,21 @@ const Index = () => {
         </div>
 
         {/* Expense Charts */}
-        <ExpenseChart transactions={transactions} />
+        {userId && (
+          <ExpenseChart 
+            transactions={transactions} 
+            userId={userId}
+            onCategoriesChange={fetchCategories}
+          />
+        )}
 
         {/* Monthly Input Table */}
         <MonthlyInputTable 
           currentMonth={selectedMonth}
           currentYear={selectedYear}
           onDataChange={fetchTransactions}
+          incomeCategories={incomeCategories}
+          expenseCategories={expenseCategories}
         />
       </main>
     </div>
