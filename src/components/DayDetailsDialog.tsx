@@ -33,10 +33,9 @@ interface DayDetailsDialogProps {
   onSave: (incomes: EntryItem[], expenses: EntryItem[]) => void;
   initialIncomes?: EntryItem[];
   initialExpenses?: EntryItem[];
+  incomeCategories: string[];
+  expenseCategories: string[];
 }
-
-const INCOME_CATEGORIES = ['Income A', 'Income B', 'Income C', 'Income D'];
-const EXPENSE_CATEGORIES = ['Expense A', 'Expense B', 'Expense C', 'Expense D'];
 
 export function DayDetailsDialog({
   open,
@@ -47,6 +46,8 @@ export function DayDetailsDialog({
   onSave,
   initialIncomes,
   initialExpenses,
+  incomeCategories,
+  expenseCategories,
 }: DayDetailsDialogProps) {
   const { t } = useLanguage();
   const [incomes, setIncomes] = useState<EntryItem[]>([{ amount: '', category: '' }]);
@@ -180,7 +181,7 @@ export function DayDetailsDialog({
                       <SelectValue placeholder={t('dialog.selectCategory')} />
                     </SelectTrigger>
                     <SelectContent>
-                      {INCOME_CATEGORIES.map((cat) => (
+                      {incomeCategories.map((cat) => (
                         <SelectItem key={cat} value={cat}>
                           {cat}
                         </SelectItem>
@@ -234,7 +235,7 @@ export function DayDetailsDialog({
                       <SelectValue placeholder={t('dialog.selectCategory')} />
                     </SelectTrigger>
                     <SelectContent>
-                      {EXPENSE_CATEGORIES.map((cat) => (
+                      {expenseCategories.map((cat) => (
                         <SelectItem key={cat} value={cat}>
                           {cat}
                         </SelectItem>
