@@ -189,17 +189,15 @@ export function DayDetailsDialog({
                     </SelectContent>
                   </Select>
                 </div>
-                {incomes.length > 1 && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeIncome(index)}
-                    className="mt-8"
-                  >
-                    <TrashIcon className="h-4 w-4" />
-                  </Button>
-                )}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeIncome(index)}
+                  className="mt-8"
+                >
+                  <TrashIcon className="h-4 w-4" />
+                </Button>
               </div>
             ))}
           </div>
@@ -243,17 +241,15 @@ export function DayDetailsDialog({
                     </SelectContent>
                   </Select>
                 </div>
-                {expenses.length > 1 && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeExpense(index)}
-                    className="mt-8"
-                  >
-                    <TrashIcon className="h-4 w-4" />
-                  </Button>
-                )}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeExpense(index)}
+                  className="mt-8"
+                >
+                  <TrashIcon className="h-4 w-4" />
+                </Button>
               </div>
             ))}
           </div>
