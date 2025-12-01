@@ -8,7 +8,8 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { ProfileButton } from '@/components/ProfileButton';
 import { MonthYearSelector } from '@/components/MonthYearSelector';
 import { Transaction } from '@/types/finance';
-import { WalletIcon, LogOutIcon, DownloadIcon } from 'lucide-react';
+import { LogOutIcon, DownloadIcon } from 'lucide-react';
+import app_logo from '@/components/app_logo.png';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -122,8 +123,12 @@ const Index = () => {
         <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-3">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <div className="rounded-lg bg-primary p-1.5 sm:p-2">
-                <WalletIcon className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
+              <div className="rounded-lg p-1.5 sm:p-2">
+                <img
+                  src={app_logo}
+                  alt="App logo"
+                  className="h-8 w-8 sm:h-10 sm:w-10 object-contain"
+                />
               </div>
               <h1 className="text-lg sm:text-xl font-bold text-foreground">
                 {t('header.title')}{username ? ` - ${username}` : ''}
