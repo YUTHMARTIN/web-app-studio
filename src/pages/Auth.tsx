@@ -75,34 +75,6 @@ const Auth = () => {
     setLoading(false);
   };
 
-  const PasswordInput = ({ id, value, onChange }: { id: string; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) => (
-    <div className="relative">
-      <Input
-        id={id}
-        type={showPassword ? 'text' : 'password'}
-        placeholder="••••••••"
-        value={value}
-        onChange={onChange}
-        required
-        minLength={6}
-        className="pr-10"
-      />
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-        onClick={() => setShowPassword(!showPassword)}
-      >
-        {showPassword ? (
-          <EyeOffIcon className="h-4 w-4 text-muted-foreground" />
-        ) : (
-          <EyeIcon className="h-4 w-4 text-muted-foreground" />
-        )}
-      </Button>
-    </div>
-  );
-
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
@@ -138,11 +110,31 @@ const Auth = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="login-password">Password</Label>
-                  <PasswordInput
-                    id="login-password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
+                  <div className="relative">
+                    <Input
+                      id="login-password"
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      minLength={6}
+                      className="pr-10"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <EyeOffIcon className="h-4 w-4 text-muted-foreground" />
+                      ) : (
+                        <EyeIcon className="h-4 w-4 text-muted-foreground" />
+                      )}
+                    </Button>
+                  </div>
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? 'Loading...' : 'Login'}
@@ -164,11 +156,31 @@ const Auth = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-password">Password</Label>
-                  <PasswordInput
-                    id="signup-password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
+                  <div className="relative">
+                    <Input
+                      id="signup-password"
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      minLength={6}
+                      className="pr-10"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <EyeOffIcon className="h-4 w-4 text-muted-foreground" />
+                      ) : (
+                        <EyeIcon className="h-4 w-4 text-muted-foreground" />
+                      )}
+                    </Button>
+                  </div>
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? 'Loading...' : 'Create Account'}
