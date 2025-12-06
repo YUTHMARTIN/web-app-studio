@@ -115,11 +115,17 @@ const Index = () => {
     }
   };
 
-  const totalIncome = transactions
+  // Filter transactions by selected month and year
+  const filteredTransactions = transactions.filter((t) => {
+    const date = new Date(t.date);
+    return date.getMonth() === selectedMonth && date.getFullYear() === selectedYear;
+  });
+
+  const totalIncome = filteredTransactions
     .filter((t) => t.type === 'INCOME')
     .reduce((sum, t) => sum + t.amount, 0);
 
-  const totalExpense = transactions
+  const totalExpense = filteredTransactions
     .filter((t) => t.type === 'EXPENSE')
     .reduce((sum, t) => sum + t.amount, 0);
 
@@ -197,7 +203,7 @@ const Index = () => {
         {/* Expense Charts */}
         {userId && (
           <ExpenseChart 
-            transactions={transactions} 
+            transactions={filteredTransactions} 
             userId={userId}
             onCategoriesChange={fetchCategories}
           />
@@ -210,6 +216,7 @@ const Index = () => {
           onDataChange={fetchTransactions}
           incomeCategories={incomeCategories}
           expenseCategories={expenseCategories}
+          transactions={filteredTransactions}
         />
       </main>
     </div>

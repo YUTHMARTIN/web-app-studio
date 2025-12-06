@@ -7,12 +7,21 @@ import { DayDetailsDialog } from './DayDetailsDialog';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+interface Transaction {
+  id: string;
+  date: string;
+  type: string;
+  category: string;
+  amount: number;
+}
+
 interface MonthlyInputTableProps {
   currentMonth: number;
   currentYear: number;
   onDataChange: () => void;
   incomeCategories: string[];
   expenseCategories: string[];
+  transactions: Transaction[];
 }
 
 const DEFAULT_INCOME_CATEGORIES = ['Income A', 'Income B', 'Income C', 'Income D'];
@@ -24,6 +33,7 @@ export function MonthlyInputTable({
   onDataChange,
   incomeCategories,
   expenseCategories,
+  transactions,
 }: MonthlyInputTableProps) {
   const { t } = useLanguage();
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
@@ -33,6 +43,14 @@ export function MonthlyInputTable({
 
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+
+  // Get days that have transactions
+  const daysWithData = new Set(
+    transactions.map((t) => {
+      const date = new Date(t.date);
+      return date.getDate();
+    })
+  );
 
   const handleDayClick = async (day: number) => {
     setSelectedDay(day);
@@ -156,16 +174,23 @@ export function MonthlyInputTable({
         </CardHeader>
         <CardContent className="p-2 sm:p-4">
           <div className="grid grid-cols-5 sm:grid-cols-7 gap-1.5 sm:gap-2">
-            {days.map((day) => (
-              <Button
-                key={day}
-                variant="outline"
-                className="h-10 sm:h-12 text-sm sm:text-base font-semibold hover:bg-primary hover:text-primary-foreground"
-                onClick={() => handleDayClick(day)}
-              >
-                {day}
-              </Button>
-            ))}
+            {days.map((day) => {
+              const hasData = daysWithData.has(day);
+              return (
+                <Button
+                  key={day}
+                  variant={hasData ? "default" : "outline"}
+                  className={`h-10 sm:h-12 text-sm sm:text-base font-semibold ${
+                    hasData 
+                      ? "bg-primary text-primary-foreground" 
+                      : "hover:bg-primary hover:text-primary-foreground"
+                  }`}
+                  onClick={() => handleDayClick(day)}
+                >
+                  {day}
+                </Button>
+              );
+            })}
           </div>
         </CardContent>
       </Card>
