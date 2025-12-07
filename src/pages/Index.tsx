@@ -7,12 +7,14 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { ProfileButton } from '@/components/ProfileButton';
 import { MonthYearSelector } from '@/components/MonthYearSelector';
+import { FinanceDashboardSelector } from '@/components/FinanceDashboardSelector';
 import { Transaction } from '@/types/finance';
 import { LogOutIcon, DownloadIcon } from 'lucide-react';
 import app_logo from '@/components/app_logo.png';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { exportIncomesToCSV, exportExpensesToCSV } from '@/utils/csvUtils';
 
@@ -25,6 +27,8 @@ const Index = () => {
   const [username, setUsername] = useState<string>('');
   const [incomeCategories, setIncomeCategories] = useState<string[]>([]);
   const [expenseCategories, setExpenseCategories] = useState<string[]>([]);
+  const [selectedDashboardId, setSelectedDashboardId] = useState<string | null>(null);
+  const [selectedDashboardName, setSelectedDashboardName] = useState<string>('');
   
   const currentDate = new Date();
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
@@ -54,13 +58,14 @@ const Index = () => {
   }, [navigate]);
 
   const fetchTransactions = async () => {
-    if (!userId) return;
+    if (!userId || !selectedDashboardId) return;
 
     setLoading(true);
     const { data, error } = await supabase
       .from('transactions')
       .select('*')
       .eq('user_id', userId)
+      .eq('dashboard_id', selectedDashboardId)
       .order('date', { ascending: false });
 
     if (error) {
@@ -72,12 +77,13 @@ const Index = () => {
   };
 
   const fetchCategories = async () => {
-    if (!userId) return;
+    if (!userId || !selectedDashboardId) return;
 
     const { data, error } = await supabase
       .from('categories')
       .select('*')
-      .eq('user_id', userId);
+      .eq('user_id', userId)
+      .eq('dashboard_id', selectedDashboardId);
 
     if (!error && data) {
       setIncomeCategories(data.filter(c => c.type === 'INCOME').map(c => c.name));
@@ -86,11 +92,16 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (userId) {
+    if (userId && selectedDashboardId) {
       fetchTransactions();
       fetchCategories();
     }
-  }, [userId]);
+  }, [userId, selectedDashboardId]);
+
+  const handleDashboardChange = (dashboardId: string, dashboardName: string) => {
+    setSelectedDashboardId(dashboardId);
+    setSelectedDashboardName(dashboardName);
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -181,16 +192,30 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
-        {/* Month/Year Selector */}
-        <div className="flex justify-start">
-          <MonthYearSelector
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-            onMonthYearChange={(month, year) => {
-              setSelectedMonth(month);
-              setSelectedYear(year);
-            }}
-          />
+        {/* Dashboard & Month/Year Selector */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {userId && (
+              <FinanceDashboardSelector
+                userId={userId}
+                selectedDashboardId={selectedDashboardId}
+                onDashboardChange={handleDashboardChange}
+              />
+            )}
+            <MonthYearSelector
+              selectedMonth={selectedMonth}
+              selectedYear={selectedYear}
+              onMonthYearChange={(month, year) => {
+                setSelectedMonth(month);
+                setSelectedYear(year);
+              }}
+            />
+          </div>
+          {selectedDashboardName && (
+            <Badge variant="secondary" className="text-sm px-3 py-1">
+              {selectedDashboardName}
+            </Badge>
+          )}
         </div>
 
         {/* Summary Cards */}
@@ -201,10 +226,11 @@ const Index = () => {
         </div>
 
         {/* Expense Charts */}
-        {userId && (
+        {userId && selectedDashboardId && (
           <ExpenseChart 
             transactions={filteredTransactions} 
             userId={userId}
+            dashboardId={selectedDashboardId}
             onCategoriesChange={fetchCategories}
           />
         )}
@@ -217,6 +243,7 @@ const Index = () => {
           incomeCategories={incomeCategories}
           expenseCategories={expenseCategories}
           transactions={filteredTransactions}
+          dashboardId={selectedDashboardId}
         />
       </main>
     </div>

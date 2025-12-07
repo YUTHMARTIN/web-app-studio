@@ -26,6 +26,7 @@ interface CategoryManagerDialogProps {
   onOpenChange: (open: boolean) => void;
   type: 'INCOME' | 'EXPENSE';
   userId: string;
+  dashboardId: string | null;
   onCategoriesChange: () => void;
 }
 
@@ -34,6 +35,7 @@ export function CategoryManagerDialog({
   onOpenChange,
   type,
   userId,
+  dashboardId,
   onCategoriesChange,
 }: CategoryManagerDialogProps) {
   const { t } = useLanguage();
@@ -50,11 +52,14 @@ export function CategoryManagerDialog({
   }, [open, type, userId]);
 
   const fetchCategories = async () => {
+    if (!dashboardId) return;
+    
     const { data, error } = await supabase
       .from('categories')
       .select('*')
       .eq('user_id', userId)
       .eq('type', type)
+      .eq('dashboard_id', dashboardId)
       .order('name');
 
     if (error) {
@@ -68,13 +73,14 @@ export function CategoryManagerDialog({
   };
 
   const handleAdd = async () => {
-    if (!newCategory.trim()) return;
+    if (!newCategory.trim() || !dashboardId) return;
     setLoading(true);
 
     const { error } = await supabase.from('categories').insert({
       user_id: userId,
       name: newCategory.trim(),
       type: type,
+      dashboard_id: dashboardId,
     });
 
     if (error) {
