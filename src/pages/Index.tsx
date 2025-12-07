@@ -215,7 +215,7 @@ const Index = () => {
             />
           </div>
           {selectedDashboardName && (
-            <Badge variant="secondary" className="text-sm px-3 py-1">
+            <Badge variant="secondary" className="text-xl px-3 py-1">
               {selectedDashboardName}
             </Badge>
           )}
