@@ -95,6 +95,9 @@ const Index = () => {
     if (userId && selectedDashboardId) {
       fetchTransactions();
       fetchCategories();
+    } else if (userId && !selectedDashboardId) {
+      // Dashboard not selected yet, stop loading to show dashboard selector
+      setLoading(false);
     }
   }, [userId, selectedDashboardId]);
 
