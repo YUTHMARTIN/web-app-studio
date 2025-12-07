@@ -17,6 +17,7 @@ export type Database = {
       categories: {
         Row: {
           created_at: string
+          dashboard_id: string | null
           id: string
           name: string
           type: string
@@ -24,6 +25,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          dashboard_id?: string | null
           id?: string
           name: string
           type: string
@@ -31,9 +33,42 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          dashboard_id?: string | null
           id?: string
           name?: string
           type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "categories_dashboard_id_fkey"
+            columns: ["dashboard_id"]
+            isOneToOne: false
+            referencedRelation: "finance_dashboards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      finance_dashboards: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -67,6 +102,7 @@ export type Database = {
           amount: number
           category: string
           created_at: string
+          dashboard_id: string | null
           date: string
           description: string | null
           id: string
@@ -77,6 +113,7 @@ export type Database = {
           amount: number
           category: string
           created_at?: string
+          dashboard_id?: string | null
           date: string
           description?: string | null
           id?: string
@@ -87,13 +124,22 @@ export type Database = {
           amount?: number
           category?: string
           created_at?: string
+          dashboard_id?: string | null
           date?: string
           description?: string | null
           id?: string
           type?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "transactions_dashboard_id_fkey"
+            columns: ["dashboard_id"]
+            isOneToOne: false
+            referencedRelation: "finance_dashboards"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

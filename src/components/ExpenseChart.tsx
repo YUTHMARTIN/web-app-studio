@@ -10,12 +10,13 @@ import { CategoryManagerDialog } from './CategoryManagerDialog';
 interface ExpenseChartProps {
   transactions: Transaction[];
   userId: string;
+  dashboardId: string | null;
   onCategoriesChange: () => void;
 }
 
 const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
-export function ExpenseChart({ transactions, userId, onCategoriesChange }: ExpenseChartProps) {
+export function ExpenseChart({ transactions, userId, dashboardId, onCategoriesChange }: ExpenseChartProps) {
   const { t } = useLanguage();
   const [incomeDialogOpen, setIncomeDialogOpen] = useState(false);
   const [expenseDialogOpen, setExpenseDialogOpen] = useState(false);
@@ -144,6 +145,7 @@ export function ExpenseChart({ transactions, userId, onCategoriesChange }: Expen
         onOpenChange={setIncomeDialogOpen}
         type="INCOME"
         userId={userId}
+        dashboardId={dashboardId}
         onCategoriesChange={onCategoriesChange}
       />
 
@@ -152,6 +154,7 @@ export function ExpenseChart({ transactions, userId, onCategoriesChange }: Expen
         onOpenChange={setExpenseDialogOpen}
         type="EXPENSE"
         userId={userId}
+        dashboardId={dashboardId}
         onCategoriesChange={onCategoriesChange}
       />
     </>

@@ -22,6 +22,7 @@ interface MonthlyInputTableProps {
   incomeCategories: string[];
   expenseCategories: string[];
   transactions: Transaction[];
+  dashboardId: string | null;
 }
 
 const DEFAULT_INCOME_CATEGORIES = ['Income A', 'Income B', 'Income C', 'Income D'];
@@ -34,6 +35,7 @@ export function MonthlyInputTable({
   incomeCategories,
   expenseCategories,
   transactions,
+  dashboardId,
 }: MonthlyInputTableProps) {
   const { t } = useLanguage();
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
@@ -66,7 +68,8 @@ export function MonthlyInputTable({
       .from('transactions')
       .select('*')
       .eq('user_id', user.id)
-      .eq('date', dateStr);
+      .eq('date', dateStr)
+      .eq('dashboard_id', dashboardId);
 
     if (!error && data) {
       const incomes = data
@@ -99,14 +102,15 @@ export function MonthlyInputTable({
 
     const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
     
-    // First, delete existing transactions for this day
+    // First, delete existing transactions for this day and dashboard
     await supabase
       .from('transactions')
       .delete()
       .eq('user_id', user.id)
-      .eq('date', dateStr);
+      .eq('date', dateStr)
+      .eq('dashboard_id', dashboardId);
     
-    const transactions = [
+    const newTransactions = [
       ...incomes
         .filter(item => item.amount && parseFloat(item.amount) > 0 && item.category)
         .map(item => ({
@@ -116,6 +120,7 @@ export function MonthlyInputTable({
           category: item.category,
           amount: parseFloat(item.amount),
           description: `Income on ${dateStr}`,
+          dashboard_id: dashboardId,
         })),
       ...expenses
         .filter(item => item.amount && parseFloat(item.amount) > 0 && item.category)
@@ -126,20 +131,23 @@ export function MonthlyInputTable({
           category: item.category,
           amount: parseFloat(item.amount),
           description: `Expense on ${dateStr}`,
+          dashboard_id: dashboardId,
         })),
     ];
 
-    if (transactions.length === 0) {
-      toast.error('Please add at least one income or expense entry');
+    // If no transactions, just close the dialog (data was already deleted above)
+    if (newTransactions.length === 0) {
+      toast.success('Day cleared');
+      onDataChange();
       return;
     }
 
-    const { error } = await supabase.from('transactions').insert(transactions);
+    const { error } = await supabase.from('transactions').insert(newTransactions);
 
     if (error) {
       toast.error('Error saving transactions: ' + error.message);
     } else {
-      toast.success(`Saved ${transactions.length} transactions!`);
+      toast.success(`Saved ${newTransactions.length} transactions!`);
       onDataChange();
     }
   };
