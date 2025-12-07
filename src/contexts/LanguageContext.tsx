@@ -98,6 +98,23 @@ const translations = {
     'category.newPlaceholder': 'New category name',
     'category.noCategories': 'No categories yet. Add one above.',
     'dialog.close': 'Close',
+    
+    // Dashboard Selector
+    'dashboard.select': 'Select',
+    'dashboard.loading': 'Loading...',
+    'dashboard.addNew': 'Add New Dashboard',
+    'dashboard.rename': 'Rename Dashboard',
+    'dashboard.add': 'Add New Dashboard',
+    'dashboard.name': 'Name',
+    'dashboard.namePlaceholder': 'e.g., Household, Business, Investment',
+    'dashboard.create': 'Create',
+    'dashboard.renameBtn': 'Rename',
+    'dashboard.failed': 'Failed to load dashboards',
+    'dashboard.exists': 'Dashboard with this name already exists',
+    'dashboard.createFailed': 'Failed to create dashboard',
+    'dashboard.created': 'Dashboard created',
+    'dashboard.renameFailed': 'Failed to rename dashboard',
+    'dashboard.renamed': 'Dashboard renamed',
   },
   km: {
     // Header
@@ -188,6 +205,23 @@ const translations = {
     'category.newPlaceholder': 'ឈ្មោះប្រភេទថ្មី',
     'category.noCategories': 'មិនទាន់មានប្រភេទទេ។ បន្ថែមនៅខាងលើ។',
     'dialog.close': 'បិទ',
+    
+    // Dashboard Selector
+    'dashboard.select': 'ជ្រើសរើស',
+    'dashboard.loading': 'កំពុងផ្ទុក...',
+    'dashboard.addNew': 'បន្ថែមផ្ទាំងថ្មី',
+    'dashboard.rename': 'ប្តូរឈ្មោះផ្ទាំង',
+    'dashboard.add': 'បន្ថែមផ្ទាំងថ្មី',
+    'dashboard.name': 'ឈ្មោះ',
+    'dashboard.namePlaceholder': 'ឧ។ គ្រួសារ, អាជីវកម្ម, ការវិនិយោគ',
+    'dashboard.create': 'បង្កើត',
+    'dashboard.renameBtn': 'ប្តូរឈ្មោះ',
+    'dashboard.failed': 'បរាជ័យក្នុងការផ្ទុកផ្ទាំង',
+    'dashboard.exists': 'ផ្ទាំងដែលមានឈ្មោះនេះមានរួចហើយ',
+    'dashboard.createFailed': 'បរាជ័យក្នុងការបង្កើតផ្ទាំង',
+    'dashboard.created': 'បានបង្កើតផ្ទាំង',
+    'dashboard.renameFailed': 'បរាជ័យក្នុងការប្តូរឈ្មោះផ្ទាំង',
+    'dashboard.renamed': 'បានប្តូរឈ្មោះផ្ទាំង',
   },
 };
 
