@@ -54,7 +54,7 @@ export function FinanceDashboardSelector({
       .order('created_at', { ascending: true });
 
     if (error) {
-      toast.error('Failed to load dashboards');
+      toast.error(t('dashboard.failed'));
     } else {
       const fetchedDashboards = (data || []) as FinanceDashboard[];
       setDashboards(fetchedDashboards);
@@ -101,12 +101,12 @@ export function FinanceDashboardSelector({
 
     if (error) {
       if (error.code === '23505') {
-        toast.error('Dashboard with this name already exists');
+        toast.error(t('dashboard.exists'));
       } else {
-        toast.error('Failed to create dashboard');
+        toast.error(t('dashboard.createFailed'));
       }
     } else {
-      toast.success('Dashboard created');
+      toast.success(t('dashboard.created'));
       setNewName('');
       setDialogOpen(false);
       fetchDashboards();
@@ -123,12 +123,12 @@ export function FinanceDashboardSelector({
 
     if (error) {
       if (error.code === '23505') {
-        toast.error('Dashboard with this name already exists');
+        toast.error(t('dashboard.exists'));
       } else {
-        toast.error('Failed to rename dashboard');
+        toast.error(t('dashboard.renameFailed'));
       }
     } else {
-      toast.success('Dashboard renamed');
+      toast.success(t('dashboard.renamed'));
       setNewName('');
       setEditingDashboard(null);
       setDialogOpen(false);
@@ -159,7 +159,7 @@ export function FinanceDashboardSelector({
   if (loading) {
     return (
       <Button variant="outline" size="sm" disabled className="h-9">
-        Loading...
+        {t('dashboard.loading')}
       </Button>
     );
   }
@@ -169,7 +169,7 @@ export function FinanceDashboardSelector({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="sm" className="h-9 gap-1">
-            <span className="max-w-[120px] truncate">{selectedDashboard?.name || 'Select'}</span>
+            <span className="max-w-[120px] truncate">{selectedDashboard?.name || t('dashboard.select')}</span>
             <ChevronDownIcon className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -201,7 +201,7 @@ export function FinanceDashboardSelector({
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={openAddDialog} className="cursor-pointer">
             <PlusIcon className="h-4 w-4 mr-2" />
-            Add New Dashboard
+            {t('dashboard.addNew')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -210,15 +210,15 @@ export function FinanceDashboardSelector({
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle>
-              {editingDashboard ? 'Rename Dashboard' : 'Add New Dashboard'}
+              {editingDashboard ? t('dashboard.rename') : t('dashboard.add')}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="dashboard-name">Name</Label>
+              <Label htmlFor="dashboard-name">{t('dashboard.name')}</Label>
               <Input
                 id="dashboard-name"
-                placeholder="e.g., Household, Business, Investment"
+                placeholder={t('dashboard.namePlaceholder')}
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 onKeyDown={(e) => {
@@ -231,10 +231,10 @@ export function FinanceDashboardSelector({
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
-              Cancel
+              {t('cancel')}
             </Button>
             <Button onClick={editingDashboard ? handleRenameDashboard : handleAddDashboard}>
-              {editingDashboard ? 'Rename' : 'Create'}
+              {editingDashboard ? t('dashboard.renameBtn') : t('dashboard.create')}
             </Button>
           </DialogFooter>
         </DialogContent>
