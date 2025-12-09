@@ -115,6 +115,11 @@ const translations = {
     'dashboard.created': 'Dashboard created',
     'dashboard.renameFailed': 'Failed to rename dashboard',
     'dashboard.renamed': 'Dashboard renamed',
+    'dashboard.deleteConfirm': 'Delete Dashboard',
+    'dashboard.deleteWarning': 'Are you sure you want to delete this dashboard? All transactions and categories in this dashboard will be permanently deleted:',
+    'dashboard.deleteFailed': 'Failed to delete dashboard',
+    'dashboard.deleted': 'Dashboard deleted',
+    'dashboard.deleteBtn': 'Delete',
   },
   km: {
     // Header
@@ -222,6 +227,11 @@ const translations = {
     'dashboard.created': 'បានបង្កើតផ្ទាំង',
     'dashboard.renameFailed': 'បរាជ័យក្នុងការប្តូរឈ្មោះផ្ទាំង',
     'dashboard.renamed': 'បានប្តូរឈ្មោះផ្ទាំង',
+    'dashboard.deleteConfirm': 'លុបផ្ទាំង',
+    'dashboard.deleteWarning': 'តើអ្នកប្រាកដថាចង់លុបផ្ទាំងនេះមែនទេ? ប្រតិបត្តិការ និងប្រភេទទាំងអស់នៅក្នុងផ្ទាំងនេះនឹងត្រូវបានលុបជាអចិន្ត្រៃយ៍:',
+    'dashboard.deleteFailed': 'បរាជ័យក្នុងការលុបផ្ទាំង',
+    'dashboard.deleted': 'បានលុបផ្ទាំង',
+    'dashboard.deleteBtn': 'លុប',
   },
 };
 

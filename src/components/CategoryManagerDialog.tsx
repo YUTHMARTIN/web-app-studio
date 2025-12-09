@@ -46,10 +46,10 @@ export function CategoryManagerDialog({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (open) {
+    if (open && dashboardId) {
       fetchCategories();
     }
-  }, [open, type, userId]);
+  }, [open, type, userId, dashboardId]);
 
   const fetchCategories = async () => {
     if (!dashboardId) return;
