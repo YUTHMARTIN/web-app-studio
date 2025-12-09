@@ -14,9 +14,19 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ChevronDownIcon, PlusIcon, PencilIcon, CheckIcon } from 'lucide-react';
+import { ChevronDownIcon, PlusIcon, PencilIcon, CheckIcon, TrashIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -45,6 +55,8 @@ export function FinanceDashboardSelector({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingDashboard, setEditingDashboard] = useState<FinanceDashboard | null>(null);
   const [newName, setNewName] = useState('');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [dashboardToDelete, setDashboardToDelete] = useState<FinanceDashboard | null>(null);
 
   const fetchDashboards = async () => {
     const { data, error } = await supabase
@@ -154,6 +166,38 @@ export function FinanceDashboardSelector({
     setDialogOpen(true);
   };
 
+  const openDeleteDialog = (dashboard: FinanceDashboard, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDashboardToDelete(dashboard);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteDashboard = async () => {
+    if (!dashboardToDelete) return;
+
+    const { error } = await supabase
+      .from('finance_dashboards')
+      .delete()
+      .eq('id', dashboardToDelete.id);
+
+    if (error) {
+      toast.error(t('dashboard.deleteFailed'));
+    } else {
+      toast.success(t('dashboard.deleted'));
+      setDeleteDialogOpen(false);
+      setDashboardToDelete(null);
+      
+      // If deleting the currently selected dashboard, select the first available one
+      if (selectedDashboardId === dashboardToDelete.id) {
+        const remaining = dashboards.filter(d => d.id !== dashboardToDelete.id);
+        if (remaining.length > 0) {
+          onDashboardChange(remaining[0].id, remaining[0].name);
+        }
+      }
+      fetchDashboards();
+    }
+  };
+
   const selectedDashboard = dashboards.find(d => d.id === selectedDashboardId);
 
   if (loading) {
@@ -194,6 +238,14 @@ export function FinanceDashboardSelector({
                   onClick={(e) => openRenameDialog(dashboard, e)}
                 >
                   <PencilIcon className="h-3 w-3" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 text-destructive hover:text-destructive"
+                  onClick={(e) => openDeleteDialog(dashboard, e)}
+                >
+                  <TrashIcon className="h-3 w-3" />
                 </Button>
               </div>
             </DropdownMenuItem>
@@ -239,6 +291,23 @@ export function FinanceDashboardSelector({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="top-[10%] translate-y-0">
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('dashboard.deleteConfirm')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('dashboard.deleteWarning')} "{dashboardToDelete?.name}"
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteDashboard} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {t('dashboard.deleteBtn')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
