@@ -143,8 +143,6 @@ const Index = () => {
     .filter((t) => t.type === 'EXPENSE')
     .reduce((sum, t) => sum + t.amount, 0);
 
-  const netProfit = totalIncome - totalExpense;
-
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -222,10 +220,9 @@ const Index = () => {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           <SummaryCard title={t('summary.totalIncome')} amount={totalIncome} type="income" />
           <SummaryCard title={t('summary.totalExpense')} amount={totalExpense} type="expense" />
-          <SummaryCard title={t('summary.netProfit')} amount={netProfit} type="profit" />
         </div>
 
         {/* Expense Charts */}

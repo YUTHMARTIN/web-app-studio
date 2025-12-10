@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -45,15 +45,10 @@ export function CategoryManagerDialog({
   const [editValue, setEditValue] = useState('');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (open && dashboardId) {
-      fetchCategories();
-    }
-  }, [open, type, userId, dashboardId]);
-
-  const fetchCategories = async () => {
-    if (!dashboardId) return;
+  const fetchCategories = useCallback(async () => {
+    if (!dashboardId || !userId) return;
     
+    setLoading(true);
     const { data, error } = await supabase
       .from('categories')
       .select('*')
@@ -63,6 +58,7 @@ export function CategoryManagerDialog({
       .order('name');
 
     if (error) {
+      console.error('Failed to load categories:', error);
       toast.error('Failed to load categories');
     } else {
       setCategories((data || []).map(d => ({
@@ -70,7 +66,14 @@ export function CategoryManagerDialog({
         type: d.type as 'INCOME' | 'EXPENSE'
       })));
     }
-  };
+    setLoading(false);
+  }, [dashboardId, userId, type]);
+
+  useEffect(() => {
+    if (open && dashboardId) {
+      fetchCategories();
+    }
+  }, [open, dashboardId, fetchCategories]);
 
   const handleAdd = async () => {
     if (!newCategory.trim() || !dashboardId) return;
