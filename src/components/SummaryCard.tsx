@@ -26,7 +26,7 @@ export function SummaryCard({ title, amount, type }: SummaryCardProps) {
 
   return (
     <Card className={cn(
-      "relative overflow-hidden transition-all hover:shadow-lg",
+      "relative overflow-hidden",
       type === 'income' && "border-income/20 bg-gradient-to-br from-income-light to-card",
       type === 'expense' && "border-expense/20 bg-gradient-to-br from-expense-light to-card",
       type === 'profit' && "border-profit/20 bg-gradient-to-br from-profit-light to-card"

@@ -16,10 +16,11 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ChevronDownIcon, PlusIcon, PencilIcon, CheckIcon } from 'lucide-react';
+import { ChevronDownIcon, PlusIcon, PencilIcon, CheckIcon, TrashIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { ConfirmDialog } from './ConfirmDialog';
 
 interface FinanceDashboard {
   id: string;
@@ -45,6 +46,8 @@ export function FinanceDashboardSelector({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingDashboard, setEditingDashboard] = useState<FinanceDashboard | null>(null);
   const [newName, setNewName] = useState('');
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [dashboardToDelete, setDashboardToDelete] = useState<FinanceDashboard | null>(null);
 
   const fetchDashboards = async () => {
     const { data, error } = await supabase
@@ -141,6 +144,46 @@ export function FinanceDashboardSelector({
     }
   };
 
+  const handleDeleteDashboard = async () => {
+    if (!dashboardToDelete) return;
+
+    // First delete all related transactions
+    await supabase
+      .from('transactions')
+      .delete()
+      .eq('dashboard_id', dashboardToDelete.id);
+
+    // Then delete all related categories
+    await supabase
+      .from('categories')
+      .delete()
+      .eq('dashboard_id', dashboardToDelete.id);
+
+    // Finally delete the dashboard
+    const { error } = await supabase
+      .from('finance_dashboards')
+      .delete()
+      .eq('id', dashboardToDelete.id);
+
+    if (error) {
+      toast.error('Failed to delete dashboard');
+    } else {
+      toast.success('Dashboard deleted');
+      setDeleteConfirmOpen(false);
+      setDashboardToDelete(null);
+      
+      // If we deleted the selected dashboard, select another one
+      if (selectedDashboardId === dashboardToDelete.id) {
+        const remaining = dashboards.filter(d => d.id !== dashboardToDelete.id);
+        if (remaining.length > 0) {
+          onDashboardChange(remaining[0].id, remaining[0].name);
+        }
+      }
+      
+      fetchDashboards();
+    }
+  };
+
   const openAddDialog = () => {
     setEditingDashboard(null);
     setNewName('');
@@ -152,6 +195,12 @@ export function FinanceDashboardSelector({
     setEditingDashboard(dashboard);
     setNewName(dashboard.name);
     setDialogOpen(true);
+  };
+
+  const openDeleteConfirm = (dashboard: FinanceDashboard, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDashboardToDelete(dashboard);
+    setDeleteConfirmOpen(true);
   };
 
   const selectedDashboard = dashboards.find(d => d.id === selectedDashboardId);
@@ -194,6 +243,14 @@ export function FinanceDashboardSelector({
                   onClick={(e) => openRenameDialog(dashboard, e)}
                 >
                   <PencilIcon className="h-3 w-3" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 text-destructive hover:text-destructive"
+                  onClick={(e) => openDeleteConfirm(dashboard, e)}
+                >
+                  <TrashIcon className="h-3 w-3" />
                 </Button>
               </div>
             </DropdownMenuItem>
@@ -239,6 +296,17 @@ export function FinanceDashboardSelector({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        title="Delete Dashboard"
+        description={`Are you sure you want to delete "${dashboardToDelete?.name}"? This will also delete all transactions and categories in this dashboard. This action cannot be undone.`}
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        onConfirm={handleDeleteDashboard}
+        variant="destructive"
+      />
     </>
   );
 }

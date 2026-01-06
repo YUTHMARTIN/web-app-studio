@@ -8,15 +8,16 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { ProfileButton } from '@/components/ProfileButton';
 import { MonthYearSelector } from '@/components/MonthYearSelector';
 import { FinanceDashboardSelector } from '@/components/FinanceDashboardSelector';
+import { CardVisibilitySelector, VisibleCards } from '@/components/CardVisibilitySelector';
+import { ExportDialog } from '@/components/ExportDialog';
 import { Transaction } from '@/types/finance';
-import { LogOutIcon, DownloadIcon } from 'lucide-react';
+import { DownloadIcon } from 'lucide-react';
 import app_logo from '@/components/app_logo.png';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { exportIncomesToCSV, exportExpensesToCSV } from '@/utils/csvUtils';
 
 const Index = () => {
   const { t } = useLanguage();
@@ -29,6 +30,12 @@ const Index = () => {
   const [expenseCategories, setExpenseCategories] = useState<string[]>([]);
   const [selectedDashboardId, setSelectedDashboardId] = useState<string | null>(null);
   const [selectedDashboardName, setSelectedDashboardName] = useState<string>('');
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [visibleCards, setVisibleCards] = useState<VisibleCards>({
+    income: true,
+    expense: true,
+    profit: true,
+  });
   
   const currentDate = new Date();
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
@@ -106,29 +113,6 @@ const Index = () => {
     setSelectedDashboardName(dashboardName);
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/auth');
-  };
-
-  const handleExportIncomes = () => {
-    try {
-      exportIncomesToCSV(transactions);
-      toast.success('Incomes exported successfully!');
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Error exporting incomes');
-    }
-  };
-
-  const handleExportExpenses = () => {
-    try {
-      exportExpensesToCSV(transactions);
-      toast.success('Expenses exported successfully!');
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Error exporting expenses');
-    }
-  };
-
   // Filter transactions by selected month and year
   const filteredTransactions = transactions.filter((t) => {
     const date = new Date(t.date);
@@ -172,22 +156,13 @@ const Index = () => {
               </h1>
             </div>
             <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
-              <Button variant="outline" size="sm" onClick={handleExportIncomes} className="text-xs sm:text-sm h-8 px-2 sm:px-3">
+              <Button variant="outline" size="sm" onClick={() => setExportDialogOpen(true)} className="text-xs sm:text-sm h-8 px-2 sm:px-3">
                 <DownloadIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Export Incomes CSV</span>
-                <span className="sm:hidden">Incomes</span>
-              </Button>
-              <Button variant="outline" size="sm" onClick={handleExportExpenses} className="text-xs sm:text-sm h-8 px-2 sm:px-3">
-                <DownloadIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Export Expenses CSV</span>
-                <span className="sm:hidden">Expenses</span>
+                Export
               </Button>
               <LanguageSwitcher />
               <ThemeToggle />
               {userId && <ProfileButton userId={userId} onUsernameChange={setUsername} />}
-              <Button variant="outline" size="icon" onClick={handleLogout} className="h-8 w-8">
-                <LogOutIcon className="h-4 w-4" />
-              </Button>
             </div>
           </div>
         </div>
@@ -214,18 +189,34 @@ const Index = () => {
               }}
             />
           </div>
-          {selectedDashboardName && (
-            <Badge variant="secondary" className="text-xl px-3 py-1">
-              {selectedDashboardName}
-            </Badge>
-          )}
+          <div className="flex items-center gap-2">
+            {selectedDashboardName && (
+              <Badge variant="secondary" className="text-xl px-3 py-1">
+                {selectedDashboardName}
+              </Badge>
+            )}
+          </div>
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
-          <SummaryCard title={t('summary.totalIncome')} amount={totalIncome} type="income" />
-          <SummaryCard title={t('summary.totalExpense')} amount={totalExpense} type="expense" />
-          <SummaryCard title={t('summary.netProfit')} amount={netProfit} type="profit" />
+        <div className="space-y-2">
+          <div className="flex justify-end">
+            <CardVisibilitySelector
+              visibleCards={visibleCards}
+              onVisibilityChange={setVisibleCards}
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+            {visibleCards.income && (
+              <SummaryCard title={t('summary.totalIncome')} amount={totalIncome} type="income" />
+            )}
+            {visibleCards.expense && (
+              <SummaryCard title={t('summary.totalExpense')} amount={totalExpense} type="expense" />
+            )}
+            {visibleCards.profit && (
+              <SummaryCard title={t('summary.netProfit')} amount={netProfit} type="profit" />
+            )}
+          </div>
         </div>
 
         {/* Expense Charts */}
@@ -249,6 +240,13 @@ const Index = () => {
           dashboardId={selectedDashboardId}
         />
       </main>
+
+      {/* Export Dialog */}
+      <ExportDialog
+        open={exportDialogOpen}
+        onOpenChange={setExportDialogOpen}
+        transactions={transactions}
+      />
     </div>
   );
 };
