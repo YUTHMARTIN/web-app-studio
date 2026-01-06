@@ -55,13 +55,13 @@ export function ExpenseChart({ transactions, userId, dashboardId, onCategoriesCh
   const incomePieData = Object.entries(incomeByCategory).map(([name, value]) => ({
     name,
     value,
-    percent: totalIncome > 0 ? (value / totalIncome) * 100 : 0,
+    percent: totalIncome > 0 ? value / totalIncome : 0,
   }));
 
   const expensePieData = Object.entries(expensesByCategory).map(([name, value]) => ({
     name,
     value,
-    percent: totalExpense > 0 ? (value / totalExpense) * 100 : 0,
+    percent: totalExpense > 0 ? value / totalExpense : 0,
   }));
 
   const formatCurrency = (value: number) => {
