@@ -6,6 +6,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recha
 import { useLanguage } from '@/contexts/LanguageContext';
 import { PencilIcon } from 'lucide-react';
 import { CategoryManagerDialog } from './CategoryManagerDialog';
+import { CategoryTransactionsDialog } from './CategoryTransactionsDialog';
 
 interface ExpenseChartProps {
   transactions: Transaction[];
@@ -20,6 +21,9 @@ export function ExpenseChart({ transactions, userId, dashboardId, onCategoriesCh
   const { t } = useLanguage();
   const [incomeDialogOpen, setIncomeDialogOpen] = useState(false);
   const [expenseDialogOpen, setExpenseDialogOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedType, setSelectedType] = useState<'INCOME' | 'EXPENSE'>('INCOME');
+  const [transactionsDialogOpen, setTransactionsDialogOpen] = useState(false);
   
   // Group income by category
   const incomeByCategory = transactions
@@ -45,14 +49,19 @@ export function ExpenseChart({ transactions, userId, dashboardId, onCategoriesCh
       return acc;
     }, {} as Record<string, number>);
 
+  const totalIncome = Object.values(incomeByCategory).reduce((sum, val) => sum + val, 0);
+  const totalExpense = Object.values(expensesByCategory).reduce((sum, val) => sum + val, 0);
+
   const incomePieData = Object.entries(incomeByCategory).map(([name, value]) => ({
     name,
     value,
+    percent: totalIncome > 0 ? (value / totalIncome) * 100 : 0,
   }));
 
   const expensePieData = Object.entries(expensesByCategory).map(([name, value]) => ({
     name,
     value,
+    percent: totalExpense > 0 ? (value / totalExpense) * 100 : 0,
   }));
 
   const formatCurrency = (value: number) => {
@@ -60,6 +69,37 @@ export function ExpenseChart({ transactions, userId, dashboardId, onCategoriesCh
       style: 'currency',
       currency: 'USD',
     }).format(value);
+  };
+
+  const handlePieClick = (data: any, type: 'INCOME' | 'EXPENSE') => {
+    if (data && data.name) {
+      setSelectedCategory(data.name);
+      setSelectedType(type);
+      setTransactionsDialogOpen(true);
+    }
+  };
+
+  const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    if (percent < 0.05) return null; // Don't show label if less than 5%
+
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="white"
+        textAnchor="middle"
+        dominantBaseline="central"
+        className="text-xs font-semibold"
+        style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}
+      >
+        {`${(percent * 100).toFixed(0)}%`}
+      </text>
+    );
   };
 
   return (
@@ -86,10 +126,12 @@ export function ExpenseChart({ transactions, userId, dashboardId, onCategoriesCh
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  label={renderCustomLabel}
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
+                  onClick={(data) => handlePieClick(data, 'INCOME')}
+                  style={{ cursor: 'pointer' }}
                 >
                   {incomePieData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -123,10 +165,12 @@ export function ExpenseChart({ transactions, userId, dashboardId, onCategoriesCh
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  label={renderCustomLabel}
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
+                  onClick={(data) => handlePieClick(data, 'EXPENSE')}
+                  style={{ cursor: 'pointer' }}
                 >
                   {expensePieData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -157,6 +201,16 @@ export function ExpenseChart({ transactions, userId, dashboardId, onCategoriesCh
         dashboardId={dashboardId}
         onCategoriesChange={onCategoriesChange}
       />
+
+      {selectedCategory && (
+        <CategoryTransactionsDialog
+          open={transactionsDialogOpen}
+          onOpenChange={setTransactionsDialogOpen}
+          category={selectedCategory}
+          transactions={transactions}
+          type={selectedType}
+        />
+      )}
     </>
   );
 }

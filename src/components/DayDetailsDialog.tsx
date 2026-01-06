@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/select';
 import { PlusIcon, TrashIcon } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { DaySectionVisibilitySelector, VisibleDaySections } from './DaySectionVisibilitySelector';
 
 interface EntryItem {
   amount: string;
@@ -52,6 +53,11 @@ export function DayDetailsDialog({
   const { t } = useLanguage();
   const [incomes, setIncomes] = useState<EntryItem[]>([{ amount: '', category: '' }]);
   const [expenses, setExpenses] = useState<EntryItem[]>([{ amount: '', category: '' }]);
+  const [visibleSections, setVisibleSections] = useState<VisibleDaySections>({
+    income: true,
+    expense: true,
+    profit: true,
+  });
 
   // Load initial data when dialog opens
   useEffect(() => {
@@ -125,134 +131,152 @@ export function DayDetailsDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+        <DialogHeader className="flex flex-row items-center justify-between">
           <DialogTitle>
             {monthNames[month]} {day}, {year}
           </DialogTitle>
+          <DaySectionVisibilitySelector
+            visibleSections={visibleSections}
+            onVisibilityChange={setVisibleSections}
+          />
         </DialogHeader>
 
         <div className="space-y-6">
           {/* Summary */}
           <div className="grid grid-cols-3 gap-4 p-4 bg-muted rounded-lg">
-            <div>
-              <p className="text-sm text-muted-foreground">{t('dialog.income')}</p>
-              <p className="text-xl font-bold text-green-600">${totalIncome.toFixed(2)}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">{t('dialog.expense')}</p>
-              <p className="text-xl font-bold text-red-600">${totalExpense.toFixed(2)}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">{t('dialog.profit')}</p>
-              <p className={`text-xl font-bold ${profit >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
-                ${profit.toFixed(2)}
-              </p>
-            </div>
+            {visibleSections.income && (
+              <div>
+                <p className="text-sm text-muted-foreground">{t('dialog.income')}</p>
+                <p className="text-xl font-bold text-income">${totalIncome.toFixed(2)}</p>
+              </div>
+            )}
+            {visibleSections.expense && (
+              <div>
+                <p className="text-sm text-muted-foreground">{t('dialog.expense')}</p>
+                <p className="text-xl font-bold text-expense">${totalExpense.toFixed(2)}</p>
+              </div>
+            )}
+            {visibleSections.profit && (
+              <div>
+                <p className="text-sm text-muted-foreground">{t('dialog.profit')}</p>
+                <p className={`text-xl font-bold ${profit >= 0 ? 'text-profit' : 'text-expense'}`}>
+                  ${profit.toFixed(2)}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Income Section */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">{t('dialog.income')}</h3>
-              <Button type="button" size="sm" onClick={addIncome}>
-                <PlusIcon className="h-4 w-4 mr-1" />
-                {t('dialog.addIncome')}
-              </Button>
-            </div>
-            {incomes.map((income, index) => (
-              <div key={index} className="flex gap-2 items-start">
-                <div className="flex-1 space-y-2">
-                  <Label>{t('dialog.amount')}</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    placeholder="0.00"
-                    value={income.amount}
-                    onChange={(e) => updateIncome(index, 'amount', e.target.value)}
-                  />
-                </div>
-                <div className="flex-1 space-y-2">
-                  <Label>{t('dialog.category')}</Label>
-                  <Select
-                    value={income.category}
-                    onValueChange={(value) => updateIncome(index, 'category', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder={t('dialog.selectCategory')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {incomeCategories.map((cat) => (
-                        <SelectItem key={cat} value={cat}>
-                          {cat}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeIncome(index)}
-                  className="mt-8"
-                >
-                  <TrashIcon className="h-4 w-4" />
+          {visibleSections.income && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold">
+                  <span className="text-income">{t('dialog.income')}</span>
+                </h3>
+                <Button type="button" size="sm" onClick={addIncome}>
+                  <PlusIcon className="h-4 w-4 mr-1" />
+                  {t('dialog.addIncome')}
                 </Button>
               </div>
-            ))}
-          </div>
+              {incomes.map((income, index) => (
+                <div key={index} className="flex gap-2 items-start">
+                  <div className="flex-1 space-y-2">
+                    <Label>{t('dialog.amount')}</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="0.00"
+                      value={income.amount}
+                      onChange={(e) => updateIncome(index, 'amount', e.target.value)}
+                    />
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <Label>{t('dialog.category')}</Label>
+                    <Select
+                      value={income.category}
+                      onValueChange={(value) => updateIncome(index, 'category', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={t('dialog.selectCategory')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {incomeCategories.map((cat) => (
+                          <SelectItem key={cat} value={cat}>
+                            {cat}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeIncome(index)}
+                    className="mt-8"
+                  >
+                    <TrashIcon className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Expense Section */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">{t('dialog.expense')}</h3>
-              <Button type="button" size="sm" onClick={addExpense}>
-                <PlusIcon className="h-4 w-4 mr-1" />
-                {t('dialog.addExpense')}
-              </Button>
-            </div>
-            {expenses.map((expense, index) => (
-              <div key={index} className="flex gap-2 items-start">
-                <div className="flex-1 space-y-2">
-                  <Label>{t('dialog.amount')}</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    placeholder="0.00"
-                    value={expense.amount}
-                    onChange={(e) => updateExpense(index, 'amount', e.target.value)}
-                  />
-                </div>
-                <div className="flex-1 space-y-2">
-                  <Label>{t('dialog.category')}</Label>
-                  <Select
-                    value={expense.category}
-                    onValueChange={(value) => updateExpense(index, 'category', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder={t('dialog.selectCategory')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {expenseCategories.map((cat) => (
-                        <SelectItem key={cat} value={cat}>
-                          {cat}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeExpense(index)}
-                  className="mt-8"
-                >
-                  <TrashIcon className="h-4 w-4" />
+          {visibleSections.expense && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold">
+                  <span className="text-expense">{t('dialog.expense')}</span>
+                </h3>
+                <Button type="button" size="sm" onClick={addExpense}>
+                  <PlusIcon className="h-4 w-4 mr-1" />
+                  {t('dialog.addExpense')}
                 </Button>
               </div>
-            ))}
-          </div>
+              {expenses.map((expense, index) => (
+                <div key={index} className="flex gap-2 items-start">
+                  <div className="flex-1 space-y-2">
+                    <Label>{t('dialog.amount')}</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="0.00"
+                      value={expense.amount}
+                      onChange={(e) => updateExpense(index, 'amount', e.target.value)}
+                    />
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <Label>{t('dialog.category')}</Label>
+                    <Select
+                      value={expense.category}
+                      onValueChange={(value) => updateExpense(index, 'category', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={t('dialog.selectCategory')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {expenseCategories.map((cat) => (
+                          <SelectItem key={cat} value={cat}>
+                            {cat}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeExpense(index)}
+                    className="mt-8"
+                  >
+                    <TrashIcon className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <DialogFooter>
